@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { List, Image } from "semantic-ui-react";
+import { List, Icon, Image, Label } from "semantic-ui-react";
 
 import imgProfile from "../assets/no_image.png";
 
@@ -24,12 +24,13 @@ export default function UsersList({ users }) {
 function User({ user }) {
   return (
     <List.Item>
-      <Image avatar src={imgProfile} />
+      <Image avatar src={user.imageUrl ? user.imageUrl : imgProfile} />
       <List.Content>
         <List.Header as={Link} to={`/user/${user.id}`}>
           {user.username}
         </List.Header>
       </List.Content>
+      <Label circular color={"green"} empty />
     </List.Item>
   );
 }

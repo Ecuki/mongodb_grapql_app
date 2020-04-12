@@ -59,3 +59,9 @@ export const FETCH_USER_QUERY = gql`
     }
   }
 `;
+
+export const EMIT_ONLINE_EVENT = gql`
+  mutation {
+    update_users
+  }
+`;
