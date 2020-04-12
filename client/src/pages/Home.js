@@ -13,15 +13,13 @@ export default function Home() {
   const { loading, error, data } = useQuery(FETCH_USERS_QUERY);
 
   return (
-    <Container>
-      <Grid centered style={{ height: "100vh" }} verticalAlign="middle">
-        <Grid.Column width={4}>
-          {!loading && data && <UsersList users={data.getUsers} />}
-        </Grid.Column>
-        <Grid.Column width={8}>
-          {!loading && data && <UserProfile user={user} />}
-        </Grid.Column>
-      </Grid>
-    </Container>
+    <Grid centered verticalAlign="middle" fluid>
+      <Grid.Column width={4}>
+        {!loading && data && <UsersList users={data.getUsers} />}
+      </Grid.Column>
+      <Grid.Column width={8}>
+        {!loading && data && <UserProfile user={user} />}
+      </Grid.Column>
+    </Grid>
   );
 }

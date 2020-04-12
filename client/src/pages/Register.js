@@ -71,7 +71,7 @@ function Register(props) {
     addUser();
   }
   return (
-    <Grid centered style={{ height: "100vh" }} verticalAlign="middle">
+    <Grid centered verticalAlign="middle" fluid>
       <Grid.Column style={{ maxWidth: 500 }}>
         <Segment raised style={{ padding: "50px 80px" }}>
           <Header

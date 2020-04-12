@@ -16,7 +16,7 @@ function Profile(props) {
   if (error) return <div>{console.log(error)}</div>;
   return (
     <Container>
-      <Grid centered style={{ height: "100vh" }} verticalAlign="middle">
+      <Grid centered verticalAlign="middle" fluid>
         <Grid.Column width={12}>
           {!loading && data && <UserProfile user={data.getUser} />}
         </Grid.Column>
