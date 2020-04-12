@@ -1,5 +1,5 @@
 const Task = require("../../models/Task");
-const checkAuth = require("../../util/check-auth");
+const checkAuth = require("../../utils/check-auth");
 const { AuthenticationError, UserInputError } = require("apollo-server");
 
 module.exports = {
@@ -24,14 +24,19 @@ module.exports = {
     }
   },
   Mutation: {
-    async createTask(_, { body }, context) {
+    async createTask(_, { body, importance, tag, topic }, context) {
       const user = checkAuth(context);
 
-      if (body.trim() === "") {
-        throw new UserInputError("Task body must not be empty");
+      const { errors, valid } = validateLoginInput(body, tag, topic);
+      if (!valid) {
+        throw new UserInputError("Errors", { errors });
       }
+
       const newTask = new Task({
         body,
+        tag,
+        topic,
+        importance,
         user: user.id,
         username: user.username,
         createdAt: new Date().toISOString()
@@ -46,7 +51,7 @@ module.exports = {
         const task = await Task.findById(taskId);
         if ((user.username = task.username)) {
           await task.delete();
-          return "Task delete successfully";
+          return taskId;
         } else {
           throw new AuthenticationError("Action not allowed");
         }
@@ -55,14 +60,23 @@ module.exports = {
       }
     },
 
-    async updateTask(_, { taskId, body }, context) {
+    async updateTask(_, { taskId, body, tag, topic, importance }, context) {
       const user = checkAuth(context);
+      const { errors, valid } = validateLoginInput(
+        body,
+        tag,
+        topic,
+        importance
+      );
+      if (!valid) {
+        throw new UserInputError("Errors", { errors });
+      }
       try {
         const task = await Task.findById(taskId);
         if ((user.username = task.username)) {
-          task.body = body;
+          task = { ...task, body, tag, topic, importance };
           await task.save();
-          return "Task updated successfully";
+          return task;
         } else {
           throw new AuthenticationError("Action not allowed");
         }

@@ -17,9 +17,12 @@ module.exports = gql`
   }
   type Task {
     id: ID!
+    topic: String!
     body: String!
     createdAt: String!
     username: String!
+    importance: String!
+    tag: String!
   }
   type Query {
     getUsers: [User]
@@ -32,6 +35,6 @@ module.exports = gql`
     login(username: String!, password: String!): User!
     createTask(body: String!): Task!
     deleteTask(taskId: ID!): String!
-    updateTask(postId: ID!): String!
+    updateTask(taskId: ID!): String!
   }
 `;

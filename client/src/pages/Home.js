@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { useQuery } from "@apollo/react-hooks";
 
-import { Container, Grid } from "semantic-ui-react";
+import { Grid } from "semantic-ui-react";
 
 import UsersList from "../components/UsersList";
 import UserProfile from "../components/UserProfile";

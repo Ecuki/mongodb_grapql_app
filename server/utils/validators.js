@@ -46,3 +46,27 @@ module.exports.validateLoginInput = (username, password) => {
     valid: Object.keys(errors).length < 1
   };
 };
+
+module.exports.validateTaskInput = (body, tag, topic, importance) => {
+  const errors = {};
+  if (body.trim() === "") {
+    errors.body = "Task body must not be empty";
+  }
+
+  if (tag.trim() === "") {
+    errors.tag = "Task tag must not be empty";
+  }
+
+  if (topic.trim() === "") {
+    errors.topic = "Task topic must not be empty";
+  }
+
+  if (importance.trim() === "") {
+    errors.importance = "Task importance must not be empty";
+  }
+
+  return {
+    errors,
+    valid: Object.keys(errors).length < 1
+  };
+};
