@@ -29,7 +29,14 @@ function MenuBar() {
       <Menu.Item name="home" active={activeItem === ""} as={Link} to={"/"}>
         Home
       </Menu.Item>
-
+      <Menu.Item
+        name="tasks"
+        active={activeItem === ""}
+        as={Link}
+        to={"/tasks"}
+      >
+        Tasks
+      </Menu.Item>
       {/* <Menu.Item
           name="testimonials"
           active={activeItem === "testimonials"}

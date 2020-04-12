@@ -2,6 +2,8 @@ const Task = require("../../models/Task");
 const checkAuth = require("../../utils/check-auth");
 const { AuthenticationError, UserInputError } = require("apollo-server");
 
+const { validateTaskInput } = require("../../utils/validators");
+
 module.exports = {
   Query: {
     async getTasks() {
@@ -27,7 +29,7 @@ module.exports = {
     async createTask(_, { body, importance, tag, topic }, context) {
       const user = checkAuth(context);
 
-      const { errors, valid } = validateLoginInput(body, tag, topic);
+      const { errors, valid } = validateTaskInput(body, tag, topic, importance);
       if (!valid) {
         throw new UserInputError("Errors", { errors });
       }
@@ -62,12 +64,7 @@ module.exports = {
 
     async updateTask(_, { taskId, body, tag, topic, importance }, context) {
       const user = checkAuth(context);
-      const { errors, valid } = validateLoginInput(
-        body,
-        tag,
-        topic,
-        importance
-      );
+      const { errors, valid } = validateTaskInput(body, tag, topic, importance);
       if (!valid) {
         throw new UserInputError("Errors", { errors });
       }

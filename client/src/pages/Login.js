@@ -52,15 +52,16 @@ function Login(props) {
     }
   });
 
-  function handleChange(e) {
-    setCredentials({ ...credentials, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: null, message: null });
+  function handleChange(e, result) {
+    setCredentials({ ...credentials, [result.name]: result.value });
+    setErrors({ ...errors, [result.name]: null, message: null });
   }
 
   function onSubmit(e) {
     e.preventDefault();
     loginUser();
   }
+
   return (
     <Grid centered verticalAlign="middle" fluid>
       <Grid.Column style={{ maxWidth: 500 }}>

@@ -60,8 +60,35 @@ export const FETCH_USER_QUERY = gql`
   }
 `;
 
-export const EMIT_ONLINE_EVENT = gql`
-  mutation {
-    update_users
+export const FETCH_TASKS_QUERY = gql`
+  {
+    getTasks {
+      id
+      topic
+      tag
+      importance
+      body
+      createdAt
+      username
+    }
+  }
+`;
+
+export const CREATE_TASK_MUTATION = gql`
+  mutation createTask(
+    $body: String!
+    $topic: String!
+    $tag: String!
+    $importance: String!
+  ) {
+    createTask(body: $body, topic: $topic, tag: $tag, importance: $importance) {
+      id
+      topic
+      tag
+      importance
+      body
+      createdAt
+      username
+    }
   }
 `;

@@ -57,9 +57,9 @@ function Register(props) {
     }
   });
 
-  function handleChange(e) {
-    setCredentials({ ...credentials, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: null });
+  function handleChange(e, result) {
+    setCredentials({ ...credentials, [result.name]: result.value });
+    setErrors({ ...errors, [result.name]: null });
   }
 
   function handleTermAgreeChange() {

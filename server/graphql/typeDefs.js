@@ -33,7 +33,12 @@ module.exports = gql`
   type Mutation {
     register(registerInput: RegisterInput): User!
     login(username: String!, password: String!): User!
-    createTask(body: String!): Task!
+    createTask(
+      topic: String!
+      body: String!
+      importance: String!
+      tag: String!
+    ): Task!
     deleteTask(taskId: ID!): String!
     updateTask(taskId: ID!): String!
   }

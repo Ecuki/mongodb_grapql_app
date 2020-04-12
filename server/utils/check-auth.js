@@ -5,13 +5,13 @@ const { SECRET_KEY } = require("../config");
 module.exports = context => {
   const authHeader = context.req.headers.authorization;
   if (authHeader) {
-    const token = authHeader.splite("Bearer ")[1];
+    const token = authHeader.split("Bearer ")[1];
     if (token) {
       try {
         const user = jwt.verify(token, SECRET_KEY);
         return user;
       } catch {
-        throw new AuthenticationError("Invalid/ expired token");
+        throw new AuthenticationError("Inalid/expired token");
       }
     }
     throw new Error('Athentication token must be "Bearer [token]"');
