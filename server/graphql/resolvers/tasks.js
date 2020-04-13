@@ -70,8 +70,13 @@ module.exports = {
       }
       try {
         const task = await Task.findById(taskId);
+
         if ((user.username = task.username)) {
-          task = { ...task, body, tag, topic, importance };
+          task.body = body;
+          task.tag = tag;
+          task.topic = topic;
+          task.importance = importance;
+
           await task.save();
           return task;
         } else {

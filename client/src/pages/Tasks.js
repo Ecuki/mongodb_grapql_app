@@ -1,25 +1,26 @@
-import React, { useState } from "react";
-import { useQuery } from "@apollo/react-hooks";
+import React from "react";
+import { useDispatch } from "react-redux";
+import { fetchTasks } from "../redux";
 import { FETCH_TASKS_QUERY } from "../utils/graphql";
-
+import { useQuery } from "@apollo/react-hooks";
 import { Grid } from "semantic-ui-react";
 
 import TasksList from "../components/TasksList";
-import TaskForm from "../components/TaskForm";
 
 function Tasks() {
+  const dispatch = useDispatch();
+
   const { loading, error, data } = useQuery(FETCH_TASKS_QUERY);
+
+  !loading && data && dispatch(fetchTasks(data.getTasks));
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error :(</p>;
 
   return (
     <Grid>
-      <Grid.Column width={10}>
-        {data && <TasksList tasks={data.getTasks} />}
-      </Grid.Column>
-      <Grid.Column width={6}>
-        <TaskForm />
+      <Grid.Column width={16}>
+        <Grid.Row>{data && <TasksList />}</Grid.Row>
       </Grid.Column>
     </Grid>
   );

@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { List, Icon, Image, Label } from "semantic-ui-react";
+import { List, Image, Label } from "semantic-ui-react";
 
 import imgProfile from "../assets/no_image.png";
 

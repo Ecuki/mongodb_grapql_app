@@ -59,6 +59,19 @@ export const FETCH_USER_QUERY = gql`
     }
   }
 `;
+export const FETCH_TASK_QUERY = gql`
+  query($taskId: ID!) {
+    getTask(taskId: $taskId) {
+      id
+      topic
+      tag
+      importance
+      body
+      createdAt
+      username
+    }
+  }
+`;
 
 export const FETCH_TASKS_QUERY = gql`
   {
@@ -82,6 +95,38 @@ export const CREATE_TASK_MUTATION = gql`
     $importance: String!
   ) {
     createTask(body: $body, topic: $topic, tag: $tag, importance: $importance) {
+      id
+      topic
+      tag
+      importance
+      body
+      createdAt
+      username
+    }
+  }
+`;
+
+export const DELETE_TASK_MUTATION = gql`
+  mutation deleteTask($taskId: ID!) {
+    deleteTask(taskId: $taskId)
+  }
+`;
+
+export const UPDATE_TASK_MUTATION = gql`
+  mutation updateTask(
+    $taskId: ID!
+    $body: String!
+    $topic: String!
+    $tag: String!
+    $importance: String!
+  ) {
+    updateTask(
+      taskId: $taskId
+      body: $body
+      topic: $topic
+      tag: $tag
+      importance: $importance
+    ) {
       id
       topic
       tag
