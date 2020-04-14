@@ -53,7 +53,7 @@ module.exports = {
         const task = await Task.findById(taskId);
         if ((user.username = task.username)) {
           await task.delete();
-          return taskId;
+          return task.id;
         } else {
           throw new AuthenticationError("Action not allowed");
         }

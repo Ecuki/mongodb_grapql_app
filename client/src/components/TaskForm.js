@@ -1,52 +1,52 @@
 import React, { useState, useEffect } from "react";
 import { useMutation } from "@apollo/react-hooks";
+import { useSelector, useDispatch } from "react-redux";
 
 import { Form } from "semantic-ui-react";
 
 import {
   CREATE_TASK_MUTATION,
   FETCH_TASKS_QUERY,
-  UPDATE_TASK_MUTATION
+  UPDATE_TASK_MUTATION,
+  DELETE_TASK_MUTATION
 } from "../utils/graphql";
-import ModalProvider from "./ModalProvaider";
+import { setErrors, clearModal } from "../redux";
 
-const initialTask = {
-  topic: "",
-  body: "",
-  tag: "",
-  importance: "normal"
-};
+function TaskForm({}) {
+  const dispatch = useDispatch();
+  const state = useSelector(state => {
+    return {
+      taskToOverview: state.taskToOverview,
+      initialTask: state.initialTask,
+      addOrEditModal: state.addOrEditModal,
+      taskImportanceOptions: state.taskImportanceOptions,
+      initialErrors: state.initialErrors,
+      errors: state.errors,
+      submitTask: state.submitTask,
+      deleteModalOpen: state.deleteModalOpen
+    };
+  });
+  const {
+    initialTask,
+    taskToOverview,
 
-const importanceOptions = [
-  { key: "l", text: "Low", value: "low" },
-  { key: "n", text: "Normal", value: "normal" },
-  { key: "h", text: "High", value: "high" }
-];
+    addOrEditModal: { isEdited, isNew },
+    taskImportanceOptions,
 
-const initialErrors = {
-  topic: null,
-  body: null,
-  tag: null,
-  importance: null
-};
+    errors,
+    submitTask
+  } = state;
 
-function TaskForm({ editedTask, open, setOpenModal, isEdited }) {
-  const actualTaskState = isEdited ? editedTask : initialTask;
-
-  const [task, setTask] = useState(actualTaskState);
-  const [errors, setErrors] = useState(initialErrors);
-
-  useEffect(() => {
-    setTask(actualTaskState);
-  }, [actualTaskState]);
+  const [task, setTask] = useState(isNew ? initialTask : taskToOverview);
 
   const { id, body, topic, tag, importance } = task;
+
+  const setErr = payload => dispatch(setErrors(payload));
 
   function handleChange(e, result) {
     const { name, value } = result;
     setTask({ ...task, [name]: value });
-    setErrors({ ...errors, [name]: null });
-    console.log("object");
+    errors[name] && setErr({ ...errors, [name]: null });
   }
 
   const [createTask, { loading }] = useMutation(CREATE_TASK_MUTATION, {
@@ -65,7 +65,7 @@ function TaskForm({ editedTask, open, setOpenModal, isEdited }) {
       setTask(initialTask);
     },
     onError(err) {
-      setErrors(err.graphQLErrors[0].extensions.errors);
+      setErr(err.graphQLErrors[0].extensions.errors);
     }
   });
 
@@ -89,83 +89,100 @@ function TaskForm({ editedTask, open, setOpenModal, isEdited }) {
         setTask(initialTask);
       },
       onError(err) {
-        console.log(err.graphQLErrors[0]);
-        setErrors(err.graphQLErrors[0].extensions.errors);
+        setErr(err.graphQLErrors[0].extensions.errors);
       }
     }
   );
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (isEdited) {
-      updateTask();
-    } else {
-      createTask();
-    }
+  // const [deleteTask, { loading: loadingDelete }] = useMutation(
+  //   DELETE_TASK_MUTATION,
+  //   {
+  //     variables: { taskId: taskToDelete.id },
+  //     update(
+  //       cache,
+  //       {
+  //         data: { deleteTask }
+  //       }
+  //     ) {
+  //       const { getTasks } = cache.readQuery({ query: FETCH_TASKS_QUERY });
+  //       cache.writeQuery({
+  //         query: FETCH_TASKS_QUERY,
+  //         data: {
+  //           getTasks: [...getTasks.filter(t => t.id !== deleteTask.id)]
+  //         }
+  //       });
+  //       setTask(initialTask);
+  //     },
+  //     onError(err) {
+  //       setErr(err.graphQLErrors[0].extensions.errors);
+  //     }
+  //   }
+  // );
 
-    const noErrors = Object.keys(errors).findIndex(
-      error => errors[error] === null
-    );
-    if (noErrors) {
-      handleModalClose();
+  useEffect(() => {
+    if (submitTask.edited || submitTask.new) {
+      (submitTask.edited ? updateTask() : createTask()).then(() => {
+        console.log("object1");
+        console.log(errors);
+      });
+
+      // console.log("object2");
+      // const noErrors = Object.keys(errors).findIndex(
+      //   error => errors[error] !== null
+      // );
+      // console.log(errors);
+      // if (noErrors > 0) {
+      //   console.log("object");
+      //   handleModalClose();
+      // }
     }
-  }
+  }, [submitTask]);
 
   function handleModalClose() {
-    setErrors(initialErrors);
-    setOpenModal({ isEdited: false, isNew: false });
-    setTask(initialTask);
+    dispatch(clearModal());
   }
-  const modalHeader = isEdited ? "Edit a Task" : "Add new Task";
 
   return (
-    <ModalProvider
-      header={modalHeader}
-      isOpen={open}
-      close={handleModalClose}
-      submit={handleSubmit}
-    >
-      <Form loading={loading || loadingUpdate ? true : false}>
-        <Form.Input
-          fluid
-          label="Task topic"
-          name="topic"
-          onChange={handleChange}
-          placeholder="Short task description"
-          value={topic}
-          error={errors.topic}
-        />
-        <Form.Input
-          fluid
-          label="Tag"
-          name="tag"
-          onChange={handleChange}
-          placeholder="Tag"
-          value={tag}
-          error={errors.tag}
-        />
-        <Form.Dropdown
-          fluid
-          name="importance"
-          label="Importance"
-          selection
-          onChange={handleChange}
-          options={importanceOptions}
-          placeholder="Importance"
-          value={importance}
-          error={errors.importance}
-        />
+    <Form loading={loading || loadingUpdate ? true : false}>
+      <Form.Input
+        fluid
+        label="Task topic"
+        name="topic"
+        onChange={handleChange}
+        placeholder="Short task description"
+        value={topic}
+        error={errors.topic}
+      />
+      <Form.Input
+        fluid
+        label="Tag"
+        name="tag"
+        onChange={handleChange}
+        placeholder="Tag"
+        value={tag}
+        error={errors.tag}
+      />
+      <Form.Dropdown
+        fluid
+        name="importance"
+        label="Importance"
+        selection
+        onChange={handleChange}
+        options={taskImportanceOptions}
+        placeholder="Importance"
+        value={importance}
+        error={errors.importance}
+      />
 
-        <Form.TextArea
-          label="Task description"
-          name="body"
-          onChange={handleChange}
-          placeholder="Tell us more about this task..."
-          value={body}
-          error={errors.body}
-        />
-      </Form>
-    </ModalProvider>
+      <Form.TextArea
+        label="Task description"
+        name="body"
+        onChange={handleChange}
+        placeholder="Tell us more about this task..."
+        value={body}
+        error={errors.body}
+      />
+    </Form>
   );
 }
 

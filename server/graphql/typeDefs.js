@@ -39,7 +39,7 @@ module.exports = gql`
       importance: String!
       tag: String!
     ): Task!
-    deleteTask(taskId: ID!): String!
+    deleteTask(taskId: ID!): ID!
     updateTask(
       taskId: ID!
       topic: String!

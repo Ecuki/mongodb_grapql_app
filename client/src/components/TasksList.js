@@ -1,32 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useMutation } from "@apollo/react-hooks";
 
 import { List, Grid } from "semantic-ui-react";
 
-import { deleteModalOpenAction, deleteModalCloseAction } from "../redux";
+import { setTaskToOverview, setErrors } from "../redux";
+
 import Task from "../components/Task";
+import TaskForm from "../components/TaskForm";
 import TasksOverview from "../components/TasksOverview";
-import ModalProvider from "./ModalProvaider";
+import ModalProvider from "../components/ModalProvaider";
 
 const TasksList = () => {
   const dispatch = useDispatch();
-  const open = useSelector(state => state.deleteModalOpen);
 
-  const tasks = useSelector(state => state.tasks);
-  const modalHeader = useSelector(state => state.header);
-  const taskToDelete = useSelector(state => state.taskToDelete);
+  const state = useSelector(state => {
+    return {
+      tasks: state.tasks,
 
-  const header = "Are you sure to delete this item?";
+      deleteModalOpen: state.deleteModalOpen,
+      addOrEditModal: state.addOrEditModal,
 
-  const openModal = task => dispatch(deleteModalOpenAction({ task, header }));
+      errors: state.errors,
+      submitTask: state.submitTask
+    };
+  });
+  const { tasks, deleteModalOpen, addOrEditModal } = state;
 
-  const closeModal = () => dispatch(deleteModalCloseAction());
+  const setTaskToView = (task = tasks[0]) => dispatch(setTaskToOverview(task));
 
-  const [activeItemId, setActiveItemId] = useState(tasks[0].id);
-
-  function handleSubmit() {
-    openModal();
-  }
+  useEffect(() => {
+    setTaskToView();
+  }, []);
 
   return (
     <>
@@ -58,22 +63,13 @@ const TasksList = () => {
         }}
       >
         {tasks.map(task => (
-          <Task
-            key={task.id}
-            task={task}
-            setActiveItemId={setActiveItemId}
-            onDelete={openModal}
-          />
+          <Task key={task.id} task={task} />
         ))}
       </List>
-      <TasksOverview taskId={activeItemId} />
-      <ModalProvider
-        header={modalHeader}
-        isOpen={open}
-        close={closeModal}
-        submit={handleSubmit}
-      >
-        {open && <Task task={taskToDelete} />}
+      <TasksOverview />
+      <ModalProvider>
+        {deleteModalOpen && <Task />}
+        {addOrEditModal.open && <TaskForm />}
       </ModalProvider>
     </>
   );

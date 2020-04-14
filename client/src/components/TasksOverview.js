@@ -1,27 +1,22 @@
-import React, { useState } from "react";
-import { useQuery } from "@apollo/react-hooks";
+import React from "react";
 import moment from "moment";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+
 import { Table, Label, Icon, Button, Header } from "semantic-ui-react";
+import { editAddModalToggle } from "../redux";
 
-import TaskForm from "../components/TaskForm";
-
-import { FETCH_TASK_QUERY } from "../utils/graphql";
-
-const initModalState = { isEdited: false, isNew: false };
-
-function TasksOverview({ taskId }) {
-  const taskColorByImportance = useSelector(
-    state => state.taskColorByImportance
-  );
-  const [openModal, setOpenModal] = useState(initModalState);
-
-  const { loading, error, data } = useQuery(FETCH_TASK_QUERY, {
-    variables: { taskId }
+function TasksOverview() {
+  const dispatch = useDispatch();
+  const state = useSelector(state => {
+    return {
+      taskColorByImportance: state.taskColorByImportance,
+      taskToOverview: state.taskToOverview,
+      addOrEditModal: state.addOrEditModal
+    };
   });
+  const { taskColorByImportance, taskToOverview } = state;
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :(</p>;
+  const toggleModal = payload => dispatch(editAddModalToggle(payload));
 
   const {
     id,
@@ -31,9 +26,8 @@ function TasksOverview({ taskId }) {
     tag,
     importance,
     topic
-  } = data.getTask;
+  } = taskToOverview;
 
-  const { isEdited, isNew } = openModal;
   return (
     <>
       <Header>
@@ -41,14 +35,18 @@ function TasksOverview({ taskId }) {
         <Button.Group floated="right">
           <Button
             color="green"
-            onClick={() => setOpenModal({ ...openModal, isNew: true })}
+            onClick={() =>
+              toggleModal({ open: true, isEdited: false, isNew: true })
+            }
           >
             <Icon name="add" />
             Add new task
           </Button>
           <Button
             color="blue"
-            onClick={() => setOpenModal({ ...openModal, isEdited: true })}
+            onClick={() =>
+              toggleModal({ open: true, isEdited: true, isNew: false })
+            }
           >
             <Icon name="edit" />
             Edit
@@ -105,12 +103,6 @@ function TasksOverview({ taskId }) {
           </Table.Row>
         </Table.Body>
       </Table>
-      <TaskForm
-        open={isEdited || isNew}
-        setOpenModal={setOpenModal}
-        isEdited={isEdited}
-        editedTask={data.getTask}
-      />
     </>
   );
 }
